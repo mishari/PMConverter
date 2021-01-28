@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ufwb version="1.17">
+    <grammar name="_PS grammar" start="id:1" author="Mishari Muqbil" fileextension="_PS">
+        <description>Grammar for _PS files</description>
+        <structure name="_PS file" id="1" encoding="ISO_8859-1:1987" endian="big" signed="no">
+            <structure name="File Header" id="8" length="64"/>
+            <structure name="Table Header" id="10" length="20" repeatmax="5"/>
+            <structure name="Data" id="12" length="remaining" repeatmax="5">
+                <number name="Cabinet_ID" id="14" fillcolor="FF0000" type="integer" length="1"/>
+            </structure>
+        </structure>
+    </grammar>
+</ufwb>
