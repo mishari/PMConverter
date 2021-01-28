@@ -1,4 +1,4 @@
-from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data
+from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data, create_dir_structure
 import os
 
 
@@ -6,8 +6,8 @@ import os
 #     assert open(shared_datadir  /  "CABINFO.INI").read() == "BLAH"
 
 def test_read_pfc_file(shared_datadir):
-    pfc_filename = shared_datadir / "_PFC._PS"
-    pfc_data = read_pfc_file(pfc_filename)
+    pfc_path = shared_datadir / "_PFC._PS"
+    pfc_data = read_pfc_file(pfc_path)
     assert 'TYPE' not in pfc_data
     assert 'LOCATION' not in pfc_data
     assert pfc_data[0] == ('00000002', '___system_drawer_1___')
@@ -23,21 +23,17 @@ def test_create_cabinets(tmpdir):
     assert "000001 - Vegetables" in list(os.listdir(output_cabinets))
     assert "000002 - Fruits" in list(os.listdir(output_cabinets))
 
-# def test_create_dir_structure(shared_datadir,tmpdir):
+def test_create_dir_structure(shared_datadir,tmpdir):
+    src_dir = shared_datadir
+    dst_dir = tmpdir
 
+    # pfc_path = shared_datadir / "_PFC._PS"
+    # pfc_data = read_pfc_file(pfc_path)
+    # mkdirs_from_pfc_data(dst_dir, pfc_data)
+    fruits_dir = os.path.join(dst_dir, '00000004 - Fruits')
 
-"""
-read cabinet data
-create cabinet directories
+    create_dir_structure(src_dir, dst_dir)
 
-for id in cabinets
-    read folders
-    make folders
-     for id in folders
-        read collection
-        make collection folders
-            for each collection
-                convert tiff to pdf
-                write pdf to collection folder
+    assert '00000004 - Fruits' in list(os.listdir(dst_dir))
+    assert '00000006 - Citrus' in list(os.listdir(fruits_dir))
 
-"""
