@@ -46,3 +46,13 @@ def create_dir_structure(src_dir,dst_dir):
             create_dir_structure(os.path.join(src_dir, d[0]), os.path.join(dst_dir, "{} - {}".format(d[0], d[1])))
         except IndexError:
             pass
+
+def find_data_dirs(src_dir):
+
+    data_dirs = []
+
+    for root, _, _ in os.walk(src_dir, topdown=True):
+        rel_path = os.path.relpath(root,start=src_dir)
+        if rel_path.count(os.sep) == 2:
+            data_dirs.append(rel_path)
+    return data_dirs

@@ -1,9 +1,6 @@
-from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data, create_dir_structure
+from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data, create_dir_structure, find_data_dirs
 import os
 
-
-# def test_read_data_dir(shared_datadir):
-#     assert open(shared_datadir  /  "CABINFO.INI").read() == "BLAH"
 
 def test_read_pfc_file(shared_datadir):
     pfc_path = shared_datadir / "_PFC._PS"
@@ -26,10 +23,7 @@ def test_create_cabinets(tmpdir):
 def test_create_dir_structure(shared_datadir,tmpdir):
     src_dir = shared_datadir
     dst_dir = tmpdir
-
-    # pfc_path = shared_datadir / "_PFC._PS"
-    # pfc_data = read_pfc_file(pfc_path)
-    # mkdirs_from_pfc_data(dst_dir, pfc_data)
+    
     fruits_dir = os.path.join(dst_dir, '00000004 - Fruits')
 
     create_dir_structure(src_dir, dst_dir)
@@ -37,3 +31,7 @@ def test_create_dir_structure(shared_datadir,tmpdir):
     assert '00000004 - Fruits' in list(os.listdir(dst_dir))
     assert '00000006 - Citrus' in list(os.listdir(fruits_dir))
 
+def test_find_data_dirs(shared_datadir):
+    data_dirs = find_data_dirs(shared_datadir)
+    assert "00000004/00000007/0000000C" in data_dirs
+    assert '00000005' not in data_dirs
