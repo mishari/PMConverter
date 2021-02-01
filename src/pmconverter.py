@@ -1,5 +1,7 @@
 import re
 import os
+import glob
+import shutil
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -11,7 +13,7 @@ def read_pfc_file(filename):
     raw_strings = [x.decode('ascii') for x in re.findall(rb"[^\x00-\x1F\x7F-\xFF]{4,}", content)]
     index = None
     for s in enumerate(raw_strings):
-        if s[1].isdigit():
+        if re.match("^[A-F|\d]{8}$",s[1]):
             index = s[0]
             break
     if index == None:
@@ -56,3 +58,36 @@ def find_data_dirs(src_dir):
         if rel_path.count(os.sep) == 2:
             data_dirs.append(rel_path)
     return data_dirs
+
+def map_src_dir_to_dst_dir(src_dir,dst_dir):
+
+    dir_pairs = []
+
+    print(dst_dir)
+
+    for s in find_data_dirs(src_dir):
+        globbed_dir = prepare_directory_to_glob(s)
+        resolved_dir = glob.glob(os.path.join(dst_dir, globbed_dir))[0]
+        rel_path = os.path.relpath(resolved_dir,start=dst_dir)
+
+        dir_pairs.append((s, rel_path))
+
+    return dir_pairs
+
+def prepare_directory_to_glob(directory):
+
+    globbed_dir = []
+    
+    for d in directory.split(os.path.sep):
+        globbed_dir.append(d + "*")
+    
+    return os.path.sep.join(globbed_dir)
+
+def convert_pm(src_dir, dst_dir):
+    create_dir_structure(src_dir, dst_dir)
+    mapped_dir = map_src_dir_to_dst_dir(src_dir,dst_dir)
+
+    for s, d in mapped_dir:
+        pfc_data = read_pfc_file(os.path.join(src_dir, s, "_PFC._PS") )
+        for id, name in pfc_data:
+            shutil.copyfile(os.path.join(src_dir, s, id), os.path.join(dst_dir,d, name + ".tiff"))
