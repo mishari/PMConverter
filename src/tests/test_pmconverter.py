@@ -1,4 +1,4 @@
-from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data, create_dir_structure, find_data_dirs, map_src_dir_to_dst_dir,prepare_directory_to_glob, convert_pm
+from pmconverter import chunks, read_pfc_file, mkdirs_from_pfc_data, create_dir_structure, find_data_dirs, map_src_dir_to_dst_dir,prepare_directory_to_glob, convert_pm, get_file_extension
 import os
 
 
@@ -58,18 +58,22 @@ def test_convert_pm_tiff_files(shared_datadir,tmpdir):
     src_dir = shared_datadir
     dst_dir = tmpdir
 
-    output_rel_path = os.path.join("00000004 - Fruits","00000007 - Berries","0000000C - January 28, 2021 10:21 AM","00000.tiff")
+    output_rel_path = os.path.join("00000004 - Fruits","00000007 - Berries","0000000C - January 28, 2021 10:21 AM","00000.tif")
 
     convert_pm(src_dir, dst_dir)
 
     assert os.path.exists(os.path.join(dst_dir,output_rel_path))
 
-def test_convert_pm_tiff_files(shared_datadir,tmpdir):
+def test_convert_pm_jpeg_files(shared_datadir,tmpdir):
     src_dir = shared_datadir
     dst_dir = tmpdir
 
-    output_rel_path = os.path.join("00000004 - Fruits","00000007 - Berries","0000000C - January 28, 2021 10:21 AM","00000.tiff")
+    output_rel_path = os.path.join("00000004 - Fruits","00000007 - Berries","00000009 - Strawberry January 07, 2021 2:47 PM","00000.jpg")
 
     convert_pm(src_dir, dst_dir)
 
     assert os.path.exists(os.path.join(dst_dir,output_rel_path))
+
+def test_get_file_extension(shared_datadir):
+    assert get_file_extension(os.path.join(shared_datadir,"00000004/00000007/00000009","0000000A")) == "jpg"
+    assert get_file_extension(os.path.join(shared_datadir,"00000004/00000007/0000000C","0000000D")) == "tif"

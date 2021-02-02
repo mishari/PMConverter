@@ -2,6 +2,8 @@ import re
 import os
 import glob
 import shutil
+import filetype
+import argparse
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -13,7 +15,7 @@ def read_pfc_file(filename):
     raw_strings = [x.decode('ascii') for x in re.findall(rb"[^\x00-\x1F\x7F-\xFF]{4,}", content)]
     index = None
     for s in enumerate(raw_strings):
-        if re.match("^[A-F|\d]{8}$",s[1]):
+        if re.match("^[A-F0-9]{8}$",s[1]):
             index = s[0]
             break
     if index == None:
@@ -90,4 +92,21 @@ def convert_pm(src_dir, dst_dir):
     for s, d in mapped_dir:
         pfc_data = read_pfc_file(os.path.join(src_dir, s, "_PFC._PS") )
         for id, name in pfc_data:
-            shutil.copyfile(os.path.join(src_dir, s, id), os.path.join(dst_dir,d, name + ".tiff"))
+            src_file = os.path.join(src_dir, s, id)
+            print(os.path.join(dst_dir,d, name + "." + get_file_extension(src_file)))
+            shutil.copyfile(src_file, os.path.join(dst_dir,d, name + "." + get_file_extension(src_file)))
+
+def get_file_extension(filename):
+    return filetype.guess(filename).extension
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Adds extensions to PaperMaster files and decodes structure')
+    parser.add_argument('--source', dest='src_dir', action='store',
+                    help='Location of Paper Master Cabinet')
+    parser.add_argument('--dest', dest='dst_dir', action='store',
+                    help='Location to store converted Paper Master Cabinet')
+    args = parser.parse_args()
+
+    convert_pm(args.src_dir, args.dst_dir)
+
+
