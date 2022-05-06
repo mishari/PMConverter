@@ -16,3 +16,21 @@ def read_fields(pfc_path, num_fields):
         cleaned_row_data[0] = cleaned_row_data[0].decode('ascii').strip('\0')
         fields.append(cleaned_row_data)
     return fields
+
+def type_to_format_string(ftype, count = 0):
+    count = int.from_bytes(count, byteorder='little')
+    print(ftype, count)
+    if ftype == b'\x02':
+        if count > 0:
+            return "{}s".format(count)
+    elif ftype == b'\x04':
+        return "H"
+    elif ftype == b'\x06':
+        return "L"
+
+def assemble_format_string(fields):
+    format_string = ""
+    for f in fields:
+        format_string += type_to_format_string(f[1], f[2])
+    return format_string
+
